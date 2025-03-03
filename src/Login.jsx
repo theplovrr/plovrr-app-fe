@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './Login.css'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import config from "./config";
 
 function Login() {
   // const [count, setCount] = useState(0)
 
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const { message } = location.state || {};
 
   const [formData, setFormData] = useState({
     email: "",
@@ -47,16 +51,22 @@ function Login() {
     }
   };
 
+  const redirectRegisterPage = async (e) => {
+    e.preventDefault();
+    navigate("/Register");
+  };
+
   return (
     <>
       <div>
+        {message ? <p>{message}</p> : ''}
         <form onSubmit={handleSubmit}>
           <label>Email: </label>
           <input type="text" name="email" value={formData.email} onChange={handleChange} />
           <label>Password: </label>
           <input type="password" name="password" value={formData.password} onChange={handleChange} />
           <button type="submit">Login</button>
-          <button id="register">Register</button>
+          <button id="register" onClick={redirectRegisterPage}>Register</button>
         </form>
         
       </div>

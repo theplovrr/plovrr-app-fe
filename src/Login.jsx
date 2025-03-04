@@ -39,12 +39,20 @@ function Login() {
           headers: { "Content-Type": "application/json"},
           credentials: "include",
           body: JSON.stringify(formData),
+        })
+        .then(async (res) => {
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(`${errorData.detail || 'Something went wrong.'}`);
+          }
+          return res.json();
+        })
+        .then((resJson) => {
+          navigate("/Dashboard", {state:{firstname:`${resJson.firstname}`, lastname:`${resJson.lastname}` }});
+        })
+        .catch((err) => {
+          alert(`${err.message}`);
         });
-
-      const result = await response.json();
-      console.log("Success3: ", result);
-
-      navigate("/Dashboard");
 
     } catch (error) {
       console.error("Error: ", error);

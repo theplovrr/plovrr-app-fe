@@ -28,9 +28,9 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // console.log(JSON.stringify(formData));
-    
+
+        // password + confirmpassword match
+
         try {
     
           const response = await fetch(

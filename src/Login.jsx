@@ -3,16 +3,17 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './Login.css'
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import config from "./config";
 
 function Login() {
-  // const [count, setCount] = useState(0)
-
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const { message } = location.state || {};
+
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -32,7 +33,7 @@ function Login() {
 
     try {
 
-      const response = await fetch(
+      await fetch(
         `${config.apiBaseUrl}/login`,
         {
           method: "POST",
@@ -48,7 +49,12 @@ function Login() {
           return res.json();
         })
         .then((resJson) => {
-          navigate("/Dashboard", {state:{firstname:`${resJson.firstname}`, lastname:`${resJson.lastname}` }});
+            setUser({
+              firstname: resJson.firstname,
+              lastname: resJson.lastname,
+              email: resJson.email,
+            });
+          navigate("/Dashboard");
         })
         .catch((err) => {
           alert(`${err.message}`);
@@ -76,30 +82,7 @@ function Login() {
           <button type="submit">Login</button>
           <button id="register" onClick={redirectRegisterPage}>Register</button>
         </form>
-        
       </div>
-
-      {/* <br />
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
     </>
   )
 }

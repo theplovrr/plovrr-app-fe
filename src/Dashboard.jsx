@@ -1,41 +1,45 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import config from "./config";
+import { useAuth } from "./AuthContext";
 
 function Dashboard() {
-  const location = useLocation();
-  
-  const { firstname, lastname } = location.state || {};
-    
-  const [loading, setLoading] = useState(true);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //       try {
-    //         console.log(data);
+  const navigate = useNavigate();
 
-    //         const response = await fetch(`${config.apiBaseUrl}/protected`, { credentials: "include" })
-    //           .then((res) => res.json())
-    //           .then((result) => setData(result))  // State updates here
-    //           .catch((err) => console.error(err));
-    //         //setData(result);
+  const { user } = useAuth();
 
-    //         console.log(data);
-    //       } catch (error) {
-    //         console.error("Error fetching data:", error);
-    //       } finally {
-    //         setLoading(false);
-    //       }
-    //     };
-    
-    //     fetchData();
-    //   }, []); // Empty dependency array = runs once when component mounts
+  const logout = async (e) => {
+    try {
+      await fetch(
+        `${config.apiBaseUrl}/logout`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        })
+        .then(async (res) => {
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(`${errorData.detail || 'Something went wrong.'}`);
+          }
+          navigate("/Login");
+        })
+        .catch((err) => {
+          alert(`${err.message}`);
+        });
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
 
-    return(
-        <>
-            <h1>Dashboard {firstname} {lastname}</h1>
-        </>
-    )
+  return (
+    <>
+      <h1>Dashboard {user.firstname} {user.lastname}</h1>
+      <a href="/Dashboard">dashboard</a>
+      <button id="logout" onClick={logout}>Logout</button>
+    </>
+  )
 }
 
 export default Dashboard
